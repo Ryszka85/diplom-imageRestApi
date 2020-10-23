@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class UserLoginRequest implements Serializable {
     private static final long serialVersionUID = -8930766376570443269L;
-    private String email, password;
+    private String email, password, tokenId, firstName, lastName, profileImg;
 
     public UserLoginRequest() {
     }
@@ -12,6 +12,38 @@ public class UserLoginRequest implements Serializable {
     public UserLoginRequest(String email, String password) {
         this.email = email;
         this.password = password;
+    }
+
+    public String getProfileImg() {
+        return profileImg;
+    }
+
+    public void setProfileImg(String profileImg) {
+        this.profileImg = profileImg;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getTokenId() {
+        return tokenId;
+    }
+
+    public void setTokenId(String tokenId) {
+        this.tokenId = tokenId;
     }
 
     public String getEmail() {

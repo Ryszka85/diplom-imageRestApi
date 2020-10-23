@@ -27,6 +27,7 @@ public class UserLibraryStorageController {
     public void addImageToUserLibrary(@PathVariable String userId,
                                       @RequestParam("file") MultipartFile file) throws IOException {
         try {
+            System.out.println("hallo???");
             this.libraryStorageService.addImageToUserLibrary(new ImageDTO(userId, file));
         } catch (Exception e) {
             logger.error("Fucking fuck fuck");

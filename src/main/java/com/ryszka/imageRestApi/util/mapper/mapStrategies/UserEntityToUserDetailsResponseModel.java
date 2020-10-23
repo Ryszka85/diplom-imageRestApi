@@ -14,7 +14,8 @@ public class UserEntityToUserDetailsResponseModel implements MapStrategy<UserEnt
                 source.getUserId(),
                 source.getEmail(),
                 source.getUsername(),
-                PathGenerator.generateFileAccessLink(source.getProfilePath())
+                source.getLoginType().equals("GOOGLE") ? source.getProfilePath() :
+                        PathGenerator.generateFileAccessLink(source.getProfilePath())
         );
     }
 }

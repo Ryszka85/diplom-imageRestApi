@@ -38,7 +38,27 @@ public class UserEntity implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "id_image")})
     private List<ImageEntity> likes;
 
+    @Column(name = "login_type")
+    private String loginType;
+
     public UserEntity() {
+    }
+
+
+    public UserAddressEntity getUserAddressEntity() {
+        return userAddressEntity;
+    }
+
+    public void setUserAddressEntity(UserAddressEntity userAddressEntity) {
+        this.userAddressEntity = userAddressEntity;
+    }
+
+    public String getLoginType() {
+        return loginType;
+    }
+
+    public void setLoginType(String loginType) {
+        this.loginType = loginType;
     }
 
     public List<ImageEntity> getLikes() {

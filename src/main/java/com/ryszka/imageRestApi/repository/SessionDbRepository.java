@@ -17,4 +17,5 @@ public interface SessionDbRepository extends CrudRepository<SessionEntity, Strin
     CompletableFuture<PrincipalBySessionQuery> someQuery(@Param("sessionId") String sessionId);
 
     SessionEntity getBySessionId(String sessionId);
+    
 }

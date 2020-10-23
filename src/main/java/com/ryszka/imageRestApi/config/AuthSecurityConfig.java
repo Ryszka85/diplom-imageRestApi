@@ -1,11 +1,9 @@
 package com.ryszka.imageRestApi.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ryszka.imageRestApi.security.AuthenticationFilter;
+import com.ryszka.imageRestApi.dao.UserDAO;
+import com.ryszka.imageRestApi.security.*;
 
-import com.ryszka.imageRestApi.security.LoginFailureHandler;
-import com.ryszka.imageRestApi.security.LoginSuccessHandler;
-import com.ryszka.imageRestApi.security.SuccessfulLogoutHandler;
 import com.ryszka.imageRestApi.service.serviceV2.readService.UserAuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,14 +40,25 @@ public class AuthSecurityConfig extends WebSecurityConfigurerAdapter {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ObjectMapper mapper;
     private final Logger logger = LoggerFactory.getLogger(AuthSecurityConfig.class);
+    private final UserDAO userDAO;
 
-    public AuthSecurityConfig(UserAuthService UserAuth,
+    public AuthSecurityConfig(UserAuthService userAuth,
+                              BCryptPasswordEncoder bCryptPasswordEncoder,
+                              ObjectMapper mapper,
+                              UserDAO userDAO) {
+        UserAuth = userAuth;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.mapper = mapper;
+        this.userDAO = userDAO;
+    }
+
+    /*public AuthSecurityConfig(UserAuthService UserAuth,
                               BCryptPasswordEncoder bCryptPasswordEncoder,
                               ObjectMapper mapper) {
         this.UserAuth = UserAuth;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.mapper = mapper;
-    }
+    }*/
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -63,6 +72,7 @@ public class AuthSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/users/signUp").permitAll()
+                .antMatchers(HttpMethod.POST, "/users/oauth/login").permitAll()
                 /*.antMatchers(HttpMethod.POST, "/images/set/tag/**").permitAll()*/
                 .antMatchers(HttpMethod.GET, "/images/user/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/images/**").permitAll()
@@ -82,6 +92,7 @@ public class AuthSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(getAuthenticationFilter())
+                .addFilter(getGoogleAuthenticationFilter())
                 .logout()
                 .logoutUrl("/logout")
                 .logoutSuccessHandler(new SuccessfulLogoutHandler(mapper))
@@ -97,6 +108,15 @@ public class AuthSecurityConfig extends WebSecurityConfigurerAdapter {
         response.setStatus(HttpStatus.OK.value());
         mapper.writeValue(response.getWriter(), "Bye!");
     }*/
+
+    public GoogleAuthFilter getGoogleAuthenticationFilter() throws Exception {
+        GoogleAuthFilter authenticationFilter = new GoogleAuthFilter(authenticationManager(), userDAO, mapper);
+        authenticationFilter.setRequiresAuthenticationRequestMatcher(
+                new AntPathRequestMatcher("/users/oauth/login", "POST"));
+        authenticationFilter.setAuthenticationSuccessHandler(new GoogleSuccessHandler(mapper));
+        authenticationFilter.setAuthenticationFailureHandler(new GoogleFailureHandler());
+        return authenticationFilter;
+    }
 
 
     public AuthenticationFilter getAuthenticationFilter() throws Exception {
